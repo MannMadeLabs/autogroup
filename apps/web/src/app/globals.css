@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Client “skin” tokens — adjust per deployment (Plug & Play). */
+  --apex-background: #f8fafc;
+  --apex-foreground: #0f172a;
+  --apex-surface: #ffffff;
+  --apex-surface-muted: #f1f5f9;
+  --apex-border: #e2e8f0;
+  --apex-muted: #64748b;
+  --apex-accent: #2563eb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --apex-background: #020617;
+    --apex-foreground: #e2e8f0;
+    --apex-surface: #0f172a;
+    --apex-surface-muted: #0b1224;
+    --apex-border: #1e293b;
+    --apex-muted: #94a3b8;
+    --apex-accent: #38bdf8;
+  }
+}
+
+body {
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+}

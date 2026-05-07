@@ -1,0 +1,11 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic[email]==2.10.3
+pydantic-settings==2.6.1
+email-validator==2.2.0
+httpx==0.28.1
+python-multipart==0.0.18
+
+# Optional integrations (install always; no-op if keys missing)
+twilio==9.4.1
+python-sendgrid==6.11.0
