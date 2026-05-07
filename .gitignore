@@ -1,0 +1,7 @@
+backend/__pycache__
+backend/**/__pycache__
+backend/**/*.pyc
+.env
+node_modules
+frontend/.next
+admin/dist
