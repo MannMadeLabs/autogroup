@@ -1,0 +1,12 @@
+{
+  "name": "project-apex",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:public": "npm --workspace @apex/public-site run dev",
+    "dev:admin": "npm --workspace @apex/admin-dashboard run dev"
+  }
+}

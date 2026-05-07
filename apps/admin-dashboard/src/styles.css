@@ -1,0 +1,91 @@
+:root {
+  font-family: Inter, Arial, sans-serif;
+  color: #0b1320;
+  background: #f4f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.app-shell {
+  padding: 24px;
+}
+
+.topbar h1 {
+  margin-bottom: 4px;
+}
+
+.topbar p {
+  margin-top: 0;
+  color: #4b5563;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.widget {
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.metric {
+  font-size: 2rem;
+  margin: 8px 0 0;
+}
+
+.kanban-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.kanban-column {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+}
+
+.kanban-column h3 {
+  margin-top: 0;
+  font-size: 0.9rem;
+}
+
+.cards {
+  display: grid;
+  gap: 10px;
+}
+
+.lead-card {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #dbeafe;
+  display: grid;
+  gap: 6px;
+}
+
+.lead-card button {
+  border: none;
+  border-radius: 6px;
+  background: #1d4ed8;
+  color: white;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.lead-card button:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}

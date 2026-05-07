@@ -1,0 +1,16 @@
+{
+  "lead_id": "9d5eec44-3e2e-44e6-b1c3-a71f65ff2ef9",
+  "source": "fb_ad",
+  "customer": {
+    "name": "Jordan Smith",
+    "phone": "+15551234567",
+    "email": "jordan.smith@example.com"
+  },
+  "vehicle": {
+    "make": "Toyota",
+    "model": "Camry",
+    "service_needed": "Brake inspection"
+  },
+  "status": "new",
+  "timestamp": "2026-05-07T20:00:00Z"
+}
