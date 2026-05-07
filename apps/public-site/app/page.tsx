@@ -78,7 +78,7 @@ export default function HomePage() {
 
         <button
           type="submit"
-          className="rounded bg-brand-500 px-5 py-3 font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50"
+          className="rounded bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
           disabled={submitState === "submitting"}
         >
           {submitState === "submitting" ? "Submitting..." : "Get My Quote"}
