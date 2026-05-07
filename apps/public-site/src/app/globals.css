@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: theme('fontFamily.sans');
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-brand-surface text-brand antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-md bg-brand-accent px-5 py-3
+           text-sm font-semibold text-white shadow-sm transition
+           hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-brand-accent focus:ring-offset-2;
+  }
+}
