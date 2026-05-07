@@ -1,0 +1,108 @@
+# Project Apex - one-shot dev stack.
+# Plug-and-play: copy `.env.example` to `.env`, set keys, then `docker compose up`.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  mariadb:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${WORDPRESS_DB_NAME}
+      MARIADB_USER: ${WORDPRESS_DB_USER}
+      MARIADB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  logic-engine:
+    build:
+      context: .
+      dockerfile: infra/docker/logic-engine.Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  wordpress:
+    image: wordpress:6.6-php8.2-apache
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_AUTH_KEY: ${WORDPRESS_AUTH_KEY}
+      WORDPRESS_SECURE_AUTH_KEY: ${WORDPRESS_SECURE_AUTH_KEY}
+      WORDPRESS_LOGGED_IN_KEY: ${WORDPRESS_LOGGED_IN_KEY}
+      WORDPRESS_NONCE_KEY: ${WORDPRESS_NONCE_KEY}
+      WORDPRESS_AUTH_SALT: ${WORDPRESS_AUTH_SALT}
+      WORDPRESS_SECURE_AUTH_SALT: ${WORDPRESS_SECURE_AUTH_SALT}
+      WORDPRESS_LOGGED_IN_SALT: ${WORDPRESS_LOGGED_IN_SALT}
+      WORDPRESS_NONCE_SALT: ${WORDPRESS_NONCE_SALT}
+      APEX_API_URL: http://logic-engine:8000
+      APEX_JWT_SECRET: ${APEX_JWT_SECRET}
+      APEX_JWT_TTL_MINUTES: ${APEX_JWT_TTL_MINUTES}
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./services/wordpress/plugin-apex-core:/var/www/html/wp-content/plugins/apex-core
+      - ./services/wordpress/config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    ports:
+      - "8080:80"
+
+  public-site:
+    build:
+      context: .
+      dockerfile: infra/docker/public-site.Dockerfile
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_GTM_ID: ${NEXT_PUBLIC_GTM_ID}
+      NEXT_PUBLIC_BRAND_NAME: ${NEXT_PUBLIC_BRAND_NAME}
+    depends_on:
+      - logic-engine
+    ports:
+      - "3000:3000"
+
+  admin-dashboard:
+    build:
+      context: .
+      dockerfile: infra/docker/admin-dashboard.Dockerfile
+      args:
+        VITE_API_URL: ${NEXT_PUBLIC_API_URL}
+    restart: unless-stopped
+    depends_on:
+      - logic-engine
+    ports:
+      - "3001:80"
+
+volumes:
+  postgres_data:
+  mariadb_data:
+  wordpress_data:
