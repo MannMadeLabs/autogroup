@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://apex.internal/schemas/lead.schema.json",
+  "title": "Lead",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lead_id",
+    "source",
+    "customer",
+    "vehicle",
+    "status",
+    "timestamp"
+  ],
+  "properties": {
+    "lead_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["fb_ad", "google_search", "organic"]
+    },
+    "customer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "phone", "email"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "phone": { "type": "string", "minLength": 7 },
+        "email": { "type": "string", "format": "email" }
+      }
+    },
+    "vehicle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["make", "model", "service_needed"],
+      "properties": {
+        "make": { "type": "string", "minLength": 1 },
+        "model": { "type": "string", "minLength": 1 },
+        "service_needed": { "type": "string", "minLength": 1 }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["new", "contacted", "quoted", "booked", "completed"]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

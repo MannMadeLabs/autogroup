@@ -1,0 +1,98 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  cms-db:
+    image: mysql:8.4
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - cms_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  wordpress:
+    image: wordpress:6.7-php8.2-apache
+    depends_on:
+      cms-db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+    ports:
+      - "8080:80"
+    volumes:
+      - ./wordpress/plugins/apex-core:/var/www/html/wp-content/plugins/apex-core
+
+  logic-engine:
+    build:
+      context: ./services/logic-engine
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      LOGIC_ENGINE_ALLOWED_ORIGINS: ${LOGIC_ENGINE_ALLOWED_ORIGINS}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
+      TWILIO_FROM_NUMBER: ${TWILIO_FROM_NUMBER}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL}
+      GA4_PROPERTY_ID: ${GA4_PROPERTY_ID}
+      GA4_SERVICE_ACCOUNT_JSON_PATH: ${GA4_SERVICE_ACCOUNT_JSON_PATH}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./services/logic-engine:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  public-site:
+    build:
+      context: ./apps/public-site
+    environment:
+      NEXT_PUBLIC_GTM_ID: ${NEXT_PUBLIC_GTM_ID}
+      NEXT_PUBLIC_LOGIC_ENGINE_URL: ${NEXT_PUBLIC_LOGIC_ENGINE_URL}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - logic-engine
+
+  admin-dashboard:
+    build:
+      context: ./apps/admin-dashboard
+    environment:
+      VITE_LOGIC_ENGINE_URL: ${VITE_LOGIC_ENGINE_URL}
+    ports:
+      - "4173:4173"
+    depends_on:
+      - logic-engine
+
+volumes:
+  postgres_data:
+  cms_db_data:
