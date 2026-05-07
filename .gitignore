@@ -1,0 +1,55 @@
+# Project Apex - root gitignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors / IDE
+.vscode/
+.idea/
+*.swp
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node / JS
+node_modules/
+.next/
+out/
+dist/
+build/
+coverage/
+.npm/
+.pnpm-debug.log*
+.yarn/
+.parcel-cache/
+.eslintcache
+*.tsbuildinfo
+
+# WordPress
+services/wordpress/wp-content/uploads/
+services/wordpress/wp-content/cache/
+services/wordpress/wp-content/upgrade/
+services/wordpress/wp/
+
+# Docker
+docker-compose.override.yml
+
+# Logs
+*.log
+logs/
