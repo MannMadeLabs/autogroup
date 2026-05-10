@@ -5,8 +5,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-apex}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-apex}
       POSTGRES_DB: ${POSTGRES_DB:-apex}
+    # Bind loopback only — do not expose DB to the internet on a VPS (see docs/HOSTING-READINESS.md).
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -32,8 +33,9 @@ services:
 
   wordpress:
     image: wordpress:6-php8.2-apache
+    # Admin UI via localhost / SSH tunnel; put TLS + hostname on the reverse proxy for production.
     ports:
-      - "8080:80"
+      - "127.0.0.1:8080:80"
     volumes:
       - ./wordpress/plugins:/var/www/html/wp-content/plugins
     environment:
@@ -49,8 +51,9 @@ services:
     build:
       context: ./services/api
       dockerfile: Dockerfile
+    # Reverse proxy (Caddy/nginx) on the host should forward to 127.0.0.1:8000 — not open API to the world.
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     env_file:
       - path: .env
         required: false

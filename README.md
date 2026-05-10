@@ -14,6 +14,8 @@
 
 **DigitalOcean:** [docs/DIGITALOCEAN-HOSTING.md](./docs/DIGITALOCEAN-HOSTING.md).
 
+**Pre-flight hosting checklist:** [docs/HOSTING-READINESS.md](./docs/HOSTING-READINESS.md).
+
 ## Repository layout
 
 | Path | Purpose |
@@ -23,7 +25,7 @@
 | `deploy/` | **Tier env templates** (`env.demo|staging|production.example`) |
 | `Makefile` | Shortcuts: `make lint-api`, `make lint-web` |
 | `CONTRIBUTING.md` | Dev setup & quality gates |
-| `docs/` | Tenant rules, staging, environments, **WordPress integration**, **DigitalOcean** |
+| `docs/` | Tenant rules, staging, environments, WordPress, DigitalOcean, **hosting checklist** |
 | `docker-compose.yml` | Postgres, MariaDB + WordPress (CMS), FastAPI logic engine |
 | `services/api/` | Python **FastAPI** — webhooks, **`GET /internal/leads`**, `/health` |
 | `apps/web/` | **Next.js** + Tailwind — lead form + **`/leads`** inbox (server-side) |

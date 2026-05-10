@@ -15,6 +15,8 @@ Use this as a **starting point** when your domain and Droplet are ready. Align t
 
 ---
 
+Before going live, walk **[HOSTING-READINESS.md](./HOSTING-READINESS.md)** (Compose port binds, CORS, TLS, firewall).
+
 ## Network & DNS
 
 1. Buy domain (registrar can stay anywhere).
