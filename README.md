@@ -2,6 +2,8 @@
 
 **Project Apex** — automotive growth engine & CRM-lite ([blueprint](./PROJECT-APEX.md)).
 
+**Contributing & CI:** see [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 **Engineering conventions:** [tenant identity, hostnames, DB naming, secrets](./docs/TENANT-AND-INFRA-RULES.md).
 
 **Staging deploy checklist:** [docs/STAGING.md](./docs/STAGING.md).
@@ -10,6 +12,9 @@
 
 | Path | Purpose |
 |------|---------|
+| `.github/workflows/` | **CI** (Ruff, pytest, ESLint, `tsc`, Next build) |
+| `Makefile` | Shortcuts: `make lint-api`, `make lint-web` |
+| `CONTRIBUTING.md` | Dev setup & quality gates |
 | `docs/` | Tenant rules, **staging checklist** (`STAGING.md`) |
 | `docker-compose.yml` | Postgres, MariaDB + WordPress (CMS), FastAPI logic engine |
 | `services/api/` | Python **FastAPI** — webhooks, **`GET /internal/leads`**, `/health` |

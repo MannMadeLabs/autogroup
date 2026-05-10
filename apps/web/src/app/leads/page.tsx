@@ -5,6 +5,9 @@ import { LeadsTableView } from "@/components/LeadsTableView";
 import { LeadsViewToggle } from "@/components/LeadsViewToggle";
 import type { LeadListItem } from "@/types/lead";
 
+/** Avoid build-time fetch for `/internal/leads` during `next build`. */
+export const dynamic = "force-dynamic";
+
 async function loadLeads(): Promise<
   { ok: true; leads: LeadListItem[] } | { ok: false; reason: string }
 > {

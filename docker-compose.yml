@@ -68,6 +68,16 @@ services:
       REVIEW_REQUEST_URL: ${REVIEW_REQUEST_URL:-}
       WEBHOOK_SECRET: ${WEBHOOK_SECRET:-}
       LOG_LEVEL: ${LOG_LEVEL:-info}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import urllib.request as u; u.urlopen('http://127.0.0.1:8000/health').read()\"",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
       postgres:
         condition: service_healthy
