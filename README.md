@@ -8,6 +8,8 @@
 
 **Staging deploy checklist:** [docs/STAGING.md](./docs/STAGING.md).
 
+**Demo vs staging vs production:** [docs/ENVIRONMENTS.md](./docs/ENVIRONMENTS.md).
+
 ## Repository layout
 
 | Path | Purpose |
@@ -15,7 +17,7 @@
 | `.github/workflows/` | **CI** (Ruff, pytest, ESLint, `tsc`, Next build) |
 | `Makefile` | Shortcuts: `make lint-api`, `make lint-web` |
 | `CONTRIBUTING.md` | Dev setup & quality gates |
-| `docs/` | Tenant rules, **staging checklist** (`STAGING.md`) |
+| `docs/` | Tenant rules, **staging checklist** (`STAGING.md`), **environment tiers** (`ENVIRONMENTS.md`) |
 | `docker-compose.yml` | Postgres, MariaDB + WordPress (CMS), FastAPI logic engine |
 | `services/api/` | Python **FastAPI** — webhooks, **`GET /internal/leads`**, `/health` |
 | `apps/web/` | **Next.js** + Tailwind — lead form + **`/leads`** inbox (server-side) |
