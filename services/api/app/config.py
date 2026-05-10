@@ -39,6 +39,12 @@ class Settings(BaseSettings):
     sendgrid_api_key: str | None = None
     sendgrid_from_email: str | None = None
 
+    # Email recipient for “new lead” alerts (SendGrid). SMS uses Twilio to the customer.
+    shop_notification_email: str | None = None
+
+    # Optional link included in review-request SMS/email when status → completed.
+    review_request_url: str | None = None
+
     def cors_origin_list(self) -> list[str]:
         parts = [p.strip() for p in self.cors_origins.split(",")]
         return [p for p in parts if p]

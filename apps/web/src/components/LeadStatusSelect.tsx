@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { patchLeadStatus } from "@/lib/leadApi";
+
 const STATUSES: { value: string; label: string }[] = [
   { value: "new", label: "New" },
   { value: "contacted", label: "Contacted" },
@@ -31,19 +33,7 @@ export function LeadStatusSelect({ leadId, currentStatus }: Props) {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch(`/api/leads/${encodeURIComponent(leadId)}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: next }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        const detail =
-          typeof data?.detail === "string"
-            ? data.detail
-            : JSON.stringify(data?.detail ?? data);
-        throw new Error(detail || `Update failed (${res.status})`);
-      }
+      await patchLeadStatus(leadId, next);
       setValue(next);
       router.refresh();
     } catch (e) {

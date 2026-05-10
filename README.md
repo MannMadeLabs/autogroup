@@ -4,11 +4,13 @@
 
 **Engineering conventions:** [tenant identity, hostnames, DB naming, secrets](./docs/TENANT-AND-INFRA-RULES.md).
 
+**Staging deploy checklist:** [docs/STAGING.md](./docs/STAGING.md).
+
 ## Repository layout
 
 | Path | Purpose |
 |------|---------|
-| `docs/` | Tenant/hosting/DB rules for multi-client deployments |
+| `docs/` | Tenant rules, **staging checklist** (`STAGING.md`) |
 | `docker-compose.yml` | Postgres, MariaDB + WordPress (CMS), FastAPI logic engine |
 | `services/api/` | Python **FastAPI** — webhooks, **`GET /internal/leads`**, `/health` |
 | `apps/web/` | **Next.js** + Tailwind — lead form + **`/leads`** inbox (server-side) |
@@ -102,9 +104,23 @@ npm run dev
 | Page | URL |
 |------|-----|
 | Lead form | http://localhost:3000 |
-| Leads inbox (server-side, key not exposed to browser) | http://localhost:3000/leads |
+| Leads **Kanban** (default) | http://localhost:3000/leads |
+| Leads **table** | http://localhost:3000/leads?view=table |
 
 The home page posts to **`NEXT_PUBLIC_APEX_API_URL`** (default `http://localhost:8000`). Ensure **`CORS_ORIGINS`** in the API includes `http://localhost:3000` (default in `.env.example`).
+
+## Messaging (Twilio + SendGrid)
+
+When credentials are set in the API `.env`:
+
+- **New lead:** SendGrid email to **`SHOP_NOTIFICATION_EMAIL`** (staff), Twilio SMS acknowledgement to the **customer**.
+- **Completed:** Twilio SMS review ask to the customer (loads phone from the DB), optional **`REVIEW_REQUEST_URL`** appended.
+
+Leave keys empty for log-only behaviour.
+
+## Staging
+
+Follow **[docs/STAGING.md](./docs/STAGING.md)** (VPS, Docker Compose, reverse proxy, TLS, env alignment for Next + API).
 
 ## Environment
 
@@ -112,9 +128,9 @@ The home page posts to **`NEXT_PUBLIC_APEX_API_URL`** (default `http://localhost
 
 **Next.js:** copy `apps/web/.env.example` → **`apps/web/.env.local`** and set the **same** `INTERNAL_API_KEY`, plus `NEXT_PUBLIC_APEX_API_URL` / `APEX_API_URL` if the API is not on `localhost:8000`.
 
-Also documented: **Postgres / `DATABASE_URL`**, **CORS**, **golden-tenant** (`TENANT_ID`, `TENANT_SLUG`), optional **Twilio / SendGrid** (log-only when unset).
+Also documented: **Postgres / `DATABASE_URL`**, **CORS**, **golden-tenant** (`TENANT_ID`, `TENANT_SLUG`), **`SHOP_NOTIFICATION_EMAIL`**, **`REVIEW_REQUEST_URL`**, optional **Twilio / SendGrid**.
 
 ## What is implemented vs next
 
-- **Done:** MVP path — public **lead form → Postgres**, **`/leads` inbox** with **in-line status updates** (`PATCH /internal/leads/{id}` via Next API route), webhooks + optional secrets, stub notifications, `/health`.
-- **Next:** Kanban layout / drag-and-drop, real Twilio/SendGrid, WordPress CPT + REST, GA4, auth for shop owners, staging deploy.
+- **Done:** MVP — lead form → Postgres, **Kanban + table** inbox, drag/status updates, **SendGrid + Twilio** integrations when keys are set, staging checklist doc.
+- **Next:** JWT auth for `/leads`, WordPress CPT + REST, GA4, hardened staging/prod (see `docs/STAGING.md`).
