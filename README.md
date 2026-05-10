@@ -10,15 +10,20 @@
 
 **Demo vs staging vs production:** [docs/ENVIRONMENTS.md](./docs/ENVIRONMENTS.md).
 
+**WordPress (headless):** [docs/WORDPRESS-INTEGRATION.md](./docs/WORDPRESS-INTEGRATION.md) · plugin stub in [`wordpress/plugins/apex-connector/`](./wordpress/plugins/apex-connector/).
+
+**DigitalOcean:** [docs/DIGITALOCEAN-HOSTING.md](./docs/DIGITALOCEAN-HOSTING.md).
+
 ## Repository layout
 
 | Path | Purpose |
 |------|---------|
 | `.github/workflows/` | **CI** (Ruff, pytest, ESLint, `tsc`, Next build) |
+| `wordpress/plugins/apex-connector/` | **WP plugin stub** (CPTs — activate in wp-admin) |
 | `deploy/` | **Tier env templates** (`env.demo|staging|production.example`) |
 | `Makefile` | Shortcuts: `make lint-api`, `make lint-web` |
 | `CONTRIBUTING.md` | Dev setup & quality gates |
-| `docs/` | Tenant rules, **staging checklist** (`STAGING.md`), **environment tiers** (`ENVIRONMENTS.md`) |
+| `docs/` | Tenant rules, staging, environments, **WordPress integration**, **DigitalOcean** |
 | `docker-compose.yml` | Postgres, MariaDB + WordPress (CMS), FastAPI logic engine |
 | `services/api/` | Python **FastAPI** — webhooks, **`GET /internal/leads`**, `/health` |
 | `apps/web/` | **Next.js** + Tailwind — lead form + **`/leads`** inbox (server-side) |
@@ -40,6 +45,8 @@ docker compose up --build
 ```
 
 The API container runs **`alembic upgrade head`** on startup so Postgres gets the `leads` table automatically.
+
+WordPress mounts **`wordpress/plugins`** from this repo — activate **Apex Connector** in WP Admin (**http://localhost:8080**) after install to register CPT stubs.
 
 **Local API without Docker** (from `services/api` after Postgres is up):
 
