@@ -7,7 +7,7 @@ from app.models.lead import LeadRecord, LeadStatus
 logger = logging.getLogger(__name__)
 
 
-async def notify_new_lead(lead: LeadRecord, settings: Settings) -> None:
+def notify_new_lead(lead: LeadRecord, settings: Settings) -> None:
     """SMS + email on new lead; logs only until Twilio/SendGrid keys are set."""
     logger.info(
         "new_lead lead_id=%s source=%s customer=%s",
@@ -29,7 +29,7 @@ async def notify_new_lead(lead: LeadRecord, settings: Settings) -> None:
         logger.debug("sendgrid: skipping email (credentials not configured)")
 
 
-async def notify_review_request(lead_id: UUID, settings: Settings) -> None:
+def notify_review_request(lead_id: UUID, settings: Settings) -> None:
     """Triggered when status moves to completed."""
     logger.info(
         "review_request lead_id=%s (stub — wire Twilio/SendGrid templates next)",

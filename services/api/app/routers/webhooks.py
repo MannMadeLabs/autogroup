@@ -4,9 +4,19 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import BaseModel
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 from app.config import Settings, get_settings
-from app.models.lead import LeadRecord, LeadStatus, NewLeadPayload, StatusUpdatePayload, resolve_new_lead
+from app.db.repositories.leads import create_lead, update_lead_status
+from app.db.session import get_db
+from app.models.lead import (
+    LeadRecord,
+    LeadStatus,
+    NewLeadPayload,
+    StatusUpdatePayload,
+    resolve_new_lead,
+)
 from app.services.notifications import notify_new_lead, notify_review_request
 
 logger = logging.getLogger(__name__)
@@ -45,25 +55,36 @@ class StatusUpdateResponse(BaseModel):
 
 
 @router.post("/new-lead", response_model=NewLeadResponse)
-async def webhook_new_lead(
+def webhook_new_lead(
     payload: NewLeadPayload,
+    db: Annotated[Session, Depends(get_db)],
     _: Annotated[None, Depends(require_webhook_secret)],
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> NewLeadResponse:
     lead: LeadRecord = resolve_new_lead(payload)
-    await notify_new_lead(lead, settings)
+    try:
+        create_lead(db, lead, settings)
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="Lead already exists") from None
+
+    notify_new_lead(lead, settings)
     return NewLeadResponse(accepted=True, lead_id=str(lead.lead_id))
 
 
 @router.post("/status-update", response_model=StatusUpdateResponse)
-async def webhook_status_update(
+def webhook_status_update(
     payload: StatusUpdatePayload,
+    db: Annotated[Session, Depends(get_db)],
     _: Annotated[None, Depends(require_webhook_secret)],
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> StatusUpdateResponse:
+    row = update_lead_status(db, payload.lead_id, payload.status, settings)
+    if row is None:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
     review_triggered = payload.status == LeadStatus.completed
     if review_triggered:
-        await notify_review_request(payload.lead_id, settings)
+        notify_review_request(payload.lead_id, settings)
     else:
         logger.info(
             "status_update lead_id=%s status=%s",

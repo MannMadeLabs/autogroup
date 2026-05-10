@@ -29,6 +29,17 @@ cp .env.example .env
 docker compose up --build
 ```
 
+The API container runs **`alembic upgrade head`** on startup so Postgres gets the `leads` table automatically.
+
+**Local API without Docker** (from `services/api` after Postgres is up):
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+alembic upgrade head
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
 Then:
 
 | Service | URL |
@@ -45,6 +56,7 @@ curl -s http://localhost:8000/health
 curl -s -X POST http://localhost:8000/webhook/new-lead \
   -H "Content-Type: application/json" \
   -d '{
+    "lead_id": "550e8400-e29b-41d4-a716-446655440000",
     "source": "organic",
     "customer": { "name": "Test User", "phone": "+15555550100", "email": "test@example.com" },
     "vehicle": { "make": "Honda", "model": "Civic", "service_needed": "Oil change" }
@@ -57,6 +69,8 @@ curl -s -X POST http://localhost:8000/webhook/status-update \
     "status": "completed"
   }'
 ```
+
+Use the same `lead_id` in both calls (or omit it on `new-lead` and paste the returned id into `status-update`).
 
 If `WEBHOOK_SECRET` is set in `.env`, send header `X-Apex-Secret: <same value>` on webhook requests.
 
@@ -76,5 +90,5 @@ Copy `.env.example` to `.env`. It documents **Postgres / `DATABASE_URL`**, **COR
 
 ## What is implemented vs next
 
-- **Done:** Compose stack, FastAPI endpoints matching PROJECT APEX section 5, optional webhook secret, stub notifications.
-- **Next:** Persist leads (Postgres), real Twilio/SendGrid, WordPress CPT + REST, dashboard app, GA4.
+- **Done:** Compose stack, FastAPI endpoints matching PROJECT APEX section 5, **SQLAlchemy `Lead` model + Alembic migrations**, Postgres persistence for webhooks, optional webhook secret, stub notifications, `/health` checks DB connectivity.
+- **Next:** List/query leads for dashboard, real Twilio/SendGrid, WordPress CPT + REST, GA4.

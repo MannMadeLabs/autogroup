@@ -1,3 +1,6 @@
+from uuid import UUID
+
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,6 +17,17 @@ class Settings(BaseSettings):
 
     tenant_id: str | None = None
     tenant_slug: str = "mann-co"
+
+    @field_validator("tenant_id")
+    @classmethod
+    def tenant_id_optional_uuid(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        text = value.strip()
+        if not text:
+            return None
+        UUID(text)
+        return text
 
     webhook_secret: str | None = None
     internal_api_key: str | None = None

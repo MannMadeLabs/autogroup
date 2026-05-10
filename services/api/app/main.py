@@ -1,11 +1,15 @@
 import logging
 import os
 from contextlib import asynccontextmanager
+from typing import Annotated
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from app.config import get_settings
+from app.db.session import engine, get_db
 from app.routers import webhooks
 
 logging.basicConfig(
@@ -49,8 +53,9 @@ app.include_router(webhooks.router)
 
 
 @app.get("/health")
-async def health() -> dict[str, str]:
-    return {"status": "ok", "service": "apex-api"}
+def health(db: Annotated[Session, Depends(get_db)]) -> dict[str, str]:
+    db.execute(text("SELECT 1"))
+    return {"status": "ok", "service": "apex-api", "database": "connected"}
 
 
 @app.get("/")
