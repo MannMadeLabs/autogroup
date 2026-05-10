@@ -2,10 +2,13 @@
 
 **Project Apex** — automotive growth engine & CRM-lite ([blueprint](./PROJECT-APEX.md)).
 
+**Engineering conventions:** [tenant identity, hostnames, DB naming, secrets](./docs/TENANT-AND-INFRA-RULES.md).
+
 ## Repository layout
 
 | Path | Purpose |
 |------|---------|
+| `docs/` | Tenant/hosting/DB rules for multi-client deployments |
 | `docker-compose.yml` | Postgres, MariaDB + WordPress (CMS), FastAPI logic engine |
 | `services/api/` | Python **FastAPI** — `/webhook/new-lead`, `/webhook/status-update`, `/health` |
 | `apps/web/` | **Next.js** + Tailwind — public marketing / lead capture (shell) |
