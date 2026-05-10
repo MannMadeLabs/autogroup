@@ -10,8 +10,8 @@
 |------|---------|
 | `docs/` | Tenant/hosting/DB rules for multi-client deployments |
 | `docker-compose.yml` | Postgres, MariaDB + WordPress (CMS), FastAPI logic engine |
-| `services/api/` | Python **FastAPI** — `/webhook/new-lead`, `/webhook/status-update`, `/health` |
-| `apps/web/` | **Next.js** + Tailwind — public marketing / lead capture (shell) |
+| `services/api/` | Python **FastAPI** — webhooks, **`GET /internal/leads`**, `/health` |
+| `apps/web/` | **Next.js** + Tailwind — lead form + **`/leads`** inbox (server-side) |
 | `packages/schemas/` | Shared **lead JSON Schema** (`lead.schema.json`) |
 
 ## Prerequisites
@@ -74,21 +74,42 @@ Use the same `lead_id` in both calls (or omit it on `new-lead` and paste the ret
 
 If `WEBHOOK_SECRET` is set in `.env`, send header `X-Apex-Secret: <same value>` on webhook requests.
 
-## Public site (Next.js)
+### Internal lead list (API)
+
+Requires **`INTERNAL_API_KEY`** in the API `.env`:
+
+```bash
+curl -s http://localhost:8000/internal/leads -H "X-Internal-Key: YOUR_KEY"
+```
+
+## Public site + inbox (Next.js)
+
+In one terminal, keep **Docker Compose** (or the API + Postgres) running. Then:
 
 ```bash
 cd apps/web
+cp .env.example .env.local
+# Set INTERNAL_API_KEY to match the repo root .env (same string as the API).
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000 — wire forms to `POST /webhook/new-lead` when ready.
+| Page | URL |
+|------|-----|
+| Lead form | http://localhost:3000 |
+| Leads inbox (server-side, key not exposed to browser) | http://localhost:3000/leads |
+
+The home page posts to **`NEXT_PUBLIC_APEX_API_URL`** (default `http://localhost:8000`). Ensure **`CORS_ORIGINS`** in the API includes `http://localhost:3000` (default in `.env.example`).
 
 ## Environment
 
-Copy `.env.example` to `.env`. It documents **Postgres / `DATABASE_URL`**, **CORS** for the Next.js dev server, **golden-tenant** placeholders (`TENANT_ID`, `TENANT_SLUG`), **`INTERNAL_API_KEY`** (for upcoming internal lead APIs), and optional **Twilio / SendGrid**. Messaging integrations stay log-only when those keys are empty.
+**API (repo root):** copy `.env.example` → `.env`. Set a shared secret in **`INTERNAL_API_KEY`** for `GET /internal/leads`.
+
+**Next.js:** copy `apps/web/.env.example` → **`apps/web/.env.local`** and set the **same** `INTERNAL_API_KEY`, plus `NEXT_PUBLIC_APEX_API_URL` / `APEX_API_URL` if the API is not on `localhost:8000`.
+
+Also documented: **Postgres / `DATABASE_URL`**, **CORS**, **golden-tenant** (`TENANT_ID`, `TENANT_SLUG`), optional **Twilio / SendGrid** (log-only when unset).
 
 ## What is implemented vs next
 
-- **Done:** Compose stack, FastAPI endpoints matching PROJECT APEX section 5, **SQLAlchemy `Lead` model + Alembic migrations**, Postgres persistence for webhooks, optional webhook secret, stub notifications, `/health` checks DB connectivity.
-- **Next:** List/query leads for dashboard, real Twilio/SendGrid, WordPress CPT + REST, GA4.
+- **Done:** MVP path — public **lead form → Postgres**, **`/leads` inbox** (internal API + Next server fetch), webhooks + optional secrets, stub notifications, `/health`.
+- **Next:** Kanban / drag status, real Twilio/SendGrid, WordPress CPT + REST, GA4, auth for shop owners, staging deploy.

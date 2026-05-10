@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from uuid import UUID
 
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -60,3 +61,20 @@ def update_lead_status(
     db.commit()
     db.refresh(row)
     return row
+
+
+def list_leads_for_tenant(
+    db: Session,
+    settings: Settings,
+    *,
+    limit: int = 50,
+    offset: int = 0,
+) -> list[Lead]:
+    stmt = (
+        select(Lead)
+        .where(Lead.tenant_slug == settings.tenant_slug)
+        .order_by(Lead.created_at.desc())
+        .offset(offset)
+        .limit(limit)
+    )
+    return list(db.execute(stmt).scalars().all())

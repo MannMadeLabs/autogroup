@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.db.session import engine, get_db
-from app.routers import webhooks
+from app.routers import internal, webhooks
 
 logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "info").upper(),
@@ -29,6 +29,7 @@ async def lifespan(app: FastAPI):
         settings.log_level,
     )
     yield
+    engine.dispose()
     logger.info("apex logic engine shutdown")
 
 
@@ -50,6 +51,7 @@ app.add_middleware(
 )
 
 app.include_router(webhooks.router)
+app.include_router(internal.router)
 
 
 @app.get("/health")
@@ -64,4 +66,5 @@ async def root() -> dict[str, str]:
         "service": "apex-api",
         "docs": "/docs",
         "health": "/health",
+        "internal_leads": "/internal/leads",
     }
