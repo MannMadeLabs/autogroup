@@ -72,7 +72,7 @@ Open http://localhost:3000 — wire forms to `POST /webhook/new-lead` when ready
 
 ## Environment
 
-Copy `.env.example` to `.env`. Twilio and SendGrid are optional for development; without keys the API logs actions only.
+Copy `.env.example` to `.env`. It documents **Postgres / `DATABASE_URL`**, **CORS** for the Next.js dev server, **golden-tenant** placeholders (`TENANT_ID`, `TENANT_SLUG`), **`INTERNAL_API_KEY`** (for upcoming internal lead APIs), and optional **Twilio / SendGrid**. Messaging integrations stay log-only when those keys are empty.
 
 ## What is implemented vs next
 

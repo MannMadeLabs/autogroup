@@ -4,11 +4,19 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
+    app_env: str = "development"
     log_level: str = "info"
 
     database_url: str = "postgresql://apex:apex@localhost:5432/apex"
 
+    # Comma-separated list (see .env.example)
+    cors_origins: str = "http://localhost:3000"
+
+    tenant_id: str | None = None
+    tenant_slug: str = "mann-co"
+
     webhook_secret: str | None = None
+    internal_api_key: str | None = None
 
     twilio_account_sid: str | None = None
     twilio_auth_token: str | None = None
@@ -16,6 +24,10 @@ class Settings(BaseSettings):
 
     sendgrid_api_key: str | None = None
     sendgrid_from_email: str | None = None
+
+    def cors_origin_list(self) -> list[str]:
+        parts = [p.strip() for p in self.cors_origins.split(",")]
+        return [p for p in parts if p]
 
 
 def get_settings() -> Settings:
