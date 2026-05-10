@@ -80,6 +80,11 @@ Requires **`INTERNAL_API_KEY`** in the API `.env`:
 
 ```bash
 curl -s http://localhost:8000/internal/leads -H "X-Internal-Key: YOUR_KEY"
+
+curl -s -X PATCH "http://localhost:8000/internal/leads/LEAD_UUID" \
+  -H "Content-Type: application/json" \
+  -H "X-Internal-Key: YOUR_KEY" \
+  -d '{"status":"contacted"}'
 ```
 
 ## Public site + inbox (Next.js)
@@ -111,5 +116,5 @@ Also documented: **Postgres / `DATABASE_URL`**, **CORS**, **golden-tenant** (`TE
 
 ## What is implemented vs next
 
-- **Done:** MVP path — public **lead form → Postgres**, **`/leads` inbox** (internal API + Next server fetch), webhooks + optional secrets, stub notifications, `/health`.
-- **Next:** Kanban / drag status, real Twilio/SendGrid, WordPress CPT + REST, GA4, auth for shop owners, staging deploy.
+- **Done:** MVP path — public **lead form → Postgres**, **`/leads` inbox** with **in-line status updates** (`PATCH /internal/leads/{id}` via Next API route), webhooks + optional secrets, stub notifications, `/health`.
+- **Next:** Kanban layout / drag-and-drop, real Twilio/SendGrid, WordPress CPT + REST, GA4, auth for shop owners, staging deploy.

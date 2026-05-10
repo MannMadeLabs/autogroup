@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { LeadStatusSelect } from "@/components/LeadStatusSelect";
+
 type LeadListItem = {
   lead_id: string;
   tenant_slug: string;
@@ -118,10 +120,11 @@ export default async function LeadsPage() {
                   <td className="whitespace-nowrap px-4 py-3 text-neutral-600">
                     {lead.source}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3">
-                    <span className="rounded-full bg-neutral-100 px-2 py-1 text-xs font-medium uppercase tracking-wide text-neutral-800">
-                      {lead.status}
-                    </span>
+                  <td className="whitespace-nowrap px-4 py-3 align-top">
+                    <LeadStatusSelect
+                      leadId={lead.lead_id}
+                      currentStatus={lead.status}
+                    />
                   </td>
                 </tr>
               ))
