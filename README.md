@@ -15,6 +15,7 @@
 | Path | Purpose |
 |------|---------|
 | `.github/workflows/` | **CI** (Ruff, pytest, ESLint, `tsc`, Next build) |
+| `deploy/` | **Tier env templates** (`env.demo|staging|production.example`) |
 | `Makefile` | Shortcuts: `make lint-api`, `make lint-web` |
 | `CONTRIBUTING.md` | Dev setup & quality gates |
 | `docs/` | Tenant rules, **staging checklist** (`STAGING.md`), **environment tiers** (`ENVIRONMENTS.md`) |

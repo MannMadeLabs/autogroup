@@ -4,6 +4,8 @@ This document defines **three isolated tiers** so the dev team can iterate safel
 
 **Related:** [STAGING.md](./STAGING.md) (single-server mechanics), [TENANT-AND-INFRA-RULES.md](./TENANT-AND-INFRA-RULES.md) (tenant identity & DB naming).
 
+**Templates:** [`deploy/`](../deploy/README.md) — `env.demo.example`, `env.staging.example`, `env.production.example`.
+
 ---
 
 ## Summary
